@@ -1,4 +1,5 @@
 from pydantic import BaseModel
+from langchain_core.messages import HumanMessage
 from fastapi import FastAPI
 from graph import workflow
 
@@ -9,7 +10,16 @@ class ChatRequest(BaseModel):
 
 @app.post('/chat')
 def chat(req : ChatRequest):
-    result = workflow.invoke({
-        "user_message": req.message
-    })
-    return {"response": result}
+    result = workflow.invoke(
+    {
+        "messages": [
+            HumanMessage(content=req.message)
+        ]
+    },
+    config={
+        "configurable": {
+            "thread_id": "1"
+        }
+    }
+)
+    return {"response": result["messages"][-1].content}

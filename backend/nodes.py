@@ -3,8 +3,9 @@ from typing import List
 
 from dotenv import load_dotenv
 
+from langchain_core import messages
 from pydantic import BaseModel, Field
-
+from langchain_core.messages import HumanMessage, SystemMessage
 from langchain_groq import ChatGroq
 from langchain_community.tools import DuckDuckGoSearchRun
 
@@ -79,7 +80,9 @@ def calculator_worker(state):
 
 def planner(state: State):
 
-    user_message = state["user_message"]
+    messages = state["messages"]
+
+    user_message = messages[-1].content
 
     prompt = f""" You are a task planning agent.
 
@@ -146,6 +149,8 @@ def research_worker(state):
 
 
 def chatbot(state: State):
+    messages = state["messages"]
+
 
     research_results = state.get(
         "research_results",
@@ -156,19 +161,26 @@ def chatbot(state: State):
         "calculator_results",
         []
     )
+    system_message = SystemMessage(
+        content=f"""
+        You are a helpful AI assistant.
 
-    prompt = f"""
-    Generate a final response using:
+        Use memory naturally.
 
-    Research Results:
-    {research_results}
+        Research Results:
+        {research_results}
 
-    Calculator Results:
-    {calculator_results}
-    """
+        Calculator Results:
+        {calculator_results}
+        """
+    )
 
-    response = model.invoke(prompt)
+    response = model.invoke(
+        [system_message] + messages
+    )
+
+    # print(type(response))
 
     return {
-        "response": response.content
+        "messages": [response]
     }

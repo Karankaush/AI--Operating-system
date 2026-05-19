@@ -1,5 +1,5 @@
 from langgraph.graph import StateGraph, START, END
-
+from langgraph.checkpoint.memory import MemorySaver
 from state import State
 
 from nodes import (
@@ -45,5 +45,7 @@ graph.add_edge("research_worker", "chatbot")
 
 graph.add_edge("chatbot", END)
 
-
-workflow = graph.compile()
+memory = MemorySaver()
+workflow = graph.compile(
+    checkpointer=memory
+)

@@ -6,7 +6,7 @@ from operator import add
 
 class State(TypedDict):
 
-    user_message: str
+    messages: Annotated[List, add]
 
     tasks: List[dict]
 
