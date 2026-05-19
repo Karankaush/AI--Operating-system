@@ -1,6 +1,6 @@
 from pydantic import BaseModel
 from fastapi import FastAPI
-from graph import graph_test
+from graph import workflow
 
 app = FastAPI()
 class ChatRequest(BaseModel):
@@ -9,7 +9,7 @@ class ChatRequest(BaseModel):
 
 @app.post('/chat')
 def chat(req : ChatRequest):
-    result = graph_test.invoke({
+    result = workflow.invoke({
         "user_message": req.message
     })
     return {"response": result}
