@@ -2,12 +2,12 @@ import os
 from typing import List
 
 from dotenv import load_dotenv
-
 from langchain_core import messages
 from pydantic import BaseModel, Field
 from langchain_core.messages import HumanMessage, SystemMessage
 from langchain_groq import ChatGroq
 from langchain_community.tools import DuckDuckGoSearchRun
+from rag.vectorstore import load_vectorstore
 
 from langgraph.types import Send
 
@@ -28,6 +28,13 @@ model = ChatGroq(
 
 search_tool = DuckDuckGoSearchRun()
 
+vectorstore = load_vectorstore()
+
+
+retriever = vectorstore.as_retriever(
+    search_kwargs={"k": 3}
+)
+
 
 class Task(BaseModel):
 
@@ -37,17 +44,17 @@ class Task(BaseModel):
     )
 
     tool: str = Field(
-        ...,
-        description="""
-        Tool required for this task.
+    ...,
+    description="""
+    Tool required for this task.
 
-        Available tools:
-        - research
-        - calculator
-        - llm
-        """
+    Available tools:
+    - research
+    - calculator
+    - rag
+    - llm
+    """
     )
-
 
 
 
@@ -57,6 +64,16 @@ class PlannerOutput(BaseModel):
 
 
 structured_llm = model.with_structured_output(PlannerOutput)
+
+
+def rag_worker(state):
+    task = state["task"]
+    result = retriever.invoke(task)
+
+    context = "\n".join([doc.page_content for doc in result])
+    return {
+        "research_results": [context]
+    }
 
 
 def calculator_worker(state):
@@ -130,6 +147,16 @@ def assign_workers(state: State):
                     }
                 )
             )
+        elif task["tool"] == "rag":
+
+            sends.append(
+                Send(
+                    "rag_worker",
+                    {
+                        "task": task["task"]
+                    }
+                )
+            )
 
     if not sends:
         return "chatbot"
@@ -161,6 +188,10 @@ def chatbot(state: State):
         "calculator_results",
         []
     )
+    rag_results = state.get(
+    "rag_results",
+    []
+    )
     system_message = SystemMessage(
         content=f"""
         You are a helpful AI assistant.
@@ -172,6 +203,9 @@ def chatbot(state: State):
 
         Calculator Results:
         {calculator_results}
+
+        RAG Results:
+        {rag_results}
         """
     )
 
@@ -179,7 +213,7 @@ def chatbot(state: State):
         [system_message] + messages
     )
 
-    # print(type(response))
+
 
     return {
         "messages": [response]

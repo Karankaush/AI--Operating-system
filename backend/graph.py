@@ -6,6 +6,7 @@ from nodes import (
     calculator_worker,
     planner,
     chatbot,
+    rag_worker,
     research_worker,
     assign_workers
 )
@@ -20,6 +21,8 @@ graph.add_node("research_worker", research_worker)
 
 graph.add_node("calculator_worker",calculator_worker)
 
+graph.add_node("rag_worker",rag_worker)
+
 graph.add_node("chatbot", chatbot)
 
 
@@ -32,6 +35,7 @@ graph.add_conditional_edges(
     {
         "research_worker": "research_worker",
         "calculator_worker": "calculator_worker",
+        "rag_worker": "rag_worker",
         "chatbot": "chatbot"
     }
 )
