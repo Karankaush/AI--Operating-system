@@ -8,30 +8,27 @@ import { Input } from "@/components/ui/input"
 
 import { Button } from "@/components/ui/button"
 
-import { sendMessage } from "@/services/chat.service"
+
+type ChatInputProps = {
+  onSendMessage: (message: string) => void
+}
 
 
-export default function ChatInput() {
+export default function ChatInput({
+  onSendMessage
+}: ChatInputProps) {
 
-  const [message, setMessage] = useState("")
+  const [message, setMessage] =
+    useState("")
 
 
-  const handleSendMessage = async () => {
+  const handleSubmit = () => {
 
     if (!message.trim()) return
 
-    try {
+    onSendMessage(message)
 
-      const response = await sendMessage(message)
-
-      console.log(response)
-
-      setMessage("")
-
-    } catch (error) {
-
-      console.log(error)
-    }
+    setMessage("")
   }
 
 
@@ -50,12 +47,12 @@ export default function ChatInput() {
         />
 
         <Button
-  size="icon"
-  onClick={handleSendMessage}
-  className="bg-blue-600 hover:bg-blue-700"
->
-  <Send className="h-4 w-4 text-white" />
-</Button>
+          size="icon"
+          onClick={handleSubmit}
+          className="bg-blue-600 hover:bg-blue-700"
+        >
+          <Send className="h-4 w-4 text-white" />
+        </Button>
 
       </div>
 
