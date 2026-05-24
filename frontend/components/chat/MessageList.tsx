@@ -9,6 +9,14 @@ const messages = [
   {
     role: "user",
     content: "Tell me about LangGraph."
+  },
+  {
+    role: "assistant",
+    content: "LangGraph is a knowledge graph that connects all your data, files, and tools in one place. It allows you to easily access and manage your information, and provides powerful search and organization capabilities."
+  },
+  {
+    role: "user",
+    content: "Tell me about LangGraph."
   }
 ]
 
