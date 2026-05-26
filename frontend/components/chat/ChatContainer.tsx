@@ -4,15 +4,23 @@ import MessageList from "./MessageList"
 
 import ChatInput from "./ChatInput"
 
-import { useChat } from "@/hooks/useChat"
+import { useChatStore }
+from "@/store/chat-store"
 
 
 export default function ChatContainer() {
 
   const {
-    messages,
-    handleSendMessage
-  } = useChat()
+    chats,
+    currentChatId
+  } = useChatStore()
+
+
+  const currentChat =
+    chats.find(
+      (chat) =>
+        chat.id === currentChatId
+    )
 
 
   return (
@@ -21,14 +29,14 @@ export default function ChatContainer() {
       <div className="flex-1 overflow-y-auto">
 
         <MessageList
-          messages={messages}
+          messages={
+            currentChat?.messages || []
+          }
         />
 
       </div>
 
-      <ChatInput
-        onSendMessage={handleSendMessage}
-      />
+      <ChatInput />
 
     </div>
   )

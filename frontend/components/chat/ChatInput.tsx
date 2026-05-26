@@ -8,27 +8,54 @@ import { Input } from "@/components/ui/input"
 
 import { Button } from "@/components/ui/button"
 
+import { useChatStore }
+from "@/store/chat-store"
 
-type ChatInputProps = {
-  onSendMessage: (message: string) => void
-}
+import { sendMessage }
+from "@/services/chat.service"
 
 
-export default function ChatInput({
-  onSendMessage
-}: ChatInputProps) {
+export default function ChatInput() {
 
   const [message, setMessage] =
     useState("")
 
 
-  const handleSubmit = () => {
+  const { addMessage } =
+    useChatStore()
+
+
+  const handleSubmit = async () => {
 
     if (!message.trim()) return
 
-    onSendMessage(message)
+
+    addMessage({
+      role: "user",
+      content: message
+    })
+
+
+    const userMessage = message
 
     setMessage("")
+
+
+    try {
+
+      const response =
+        await sendMessage(userMessage)
+
+
+      addMessage({
+        role: "assistant",
+        content: response.response
+      })
+
+    } catch (error) {
+
+      console.log(error)
+    }
   }
 
 
@@ -43,13 +70,21 @@ export default function ChatInput({
             setMessage(e.target.value)
           }
           placeholder="Ask anything..."
-          className="border-zinc-700 bg-zinc-900 text-white"
+          className="
+            border-zinc-700
+            bg-zinc-900
+            text-white
+          "
         />
+
 
         <Button
           size="icon"
           onClick={handleSubmit}
-          className="bg-blue-600 hover:bg-blue-700"
+          className="
+            bg-blue-600
+            hover:bg-blue-700
+          "
         >
           <Send className="h-4 w-4 text-white" />
         </Button>

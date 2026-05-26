@@ -1,7 +1,8 @@
 "use client"
 
 import { uploadPdf } from "@/services/pdf.service"
-import { useRef } from "react"
+
+import { useRef, useState } from "react"
 
 import { Upload } from "lucide-react"
 
@@ -14,6 +15,10 @@ export default function PdfUpload() {
     useRef<HTMLInputElement | null>(null)
 
 
+  const [fileName, setFileName] =
+    useState("")
+
+
   const handleButtonClick = () => {
 
     inputRef.current?.click()
@@ -21,24 +26,28 @@ export default function PdfUpload() {
 
 
   const handleFileChange = async (
-  event: React.ChangeEvent<HTMLInputElement>
-) => {
+    event: React.ChangeEvent<HTMLInputElement>
+  ) => {
 
-  const file = event.target.files?.[0]
+    const file = event.target.files?.[0]
 
-  if (!file) return
+    if (!file) return
 
-  try {
 
-    const response = await uploadPdf(file)
+    setFileName(file.name)
 
-    console.log(response)
 
-  } catch (error) {
+    try {
 
-    console.log(error)
+      const response = await uploadPdf(file)
+
+      console.log(response)
+
+    } catch (error) {
+
+      console.log(error)
+    }
   }
-}
 
 
   return (
@@ -67,6 +76,17 @@ export default function PdfUpload() {
         Upload PDF
 
       </Button>
+
+
+      {fileName && (
+
+        <p className="mt-3 text-sm text-zinc-400">
+
+          Selected: {fileName}
+
+        </p>
+
+      )}
 
     </div>
   )

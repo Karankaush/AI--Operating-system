@@ -4,6 +4,7 @@ from fastapi import FastAPI
 from graph import workflow
 from fastapi import UploadFile, File
 import shutil
+from rag.rag import ingest_pdf
 from fastapi.middleware.cors import CORSMiddleware
 
 app = FastAPI()
@@ -41,6 +42,9 @@ async def upload_pdf(
             file.file,
             buffer
         )
+
+
+    ingest_pdf(file_path)
 
 
     return {

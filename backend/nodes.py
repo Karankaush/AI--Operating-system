@@ -67,14 +67,22 @@ structured_llm = model.with_structured_output(PlannerOutput)
 
 
 def rag_worker(state):
+
     task = state["task"]
-    result = retriever.invoke(task)
 
-    context = "\n".join([doc.page_content for doc in result])
+
+    results = retriever.invoke(task)
+
+
+    context = "\n\n".join(
+        [doc.page_content for doc in results]
+    )
+
+
     return {
-        "research_results": [context]
+        "rag_results": [context],
+        "used_tools": ["rag"]
     }
-
 
 def calculator_worker(state):
 
