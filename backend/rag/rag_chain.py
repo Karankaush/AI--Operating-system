@@ -1,6 +1,7 @@
 import os
 from langchain_core.prompts import ChatPromptTemplate
-from vectorstore import load_vectorstore
+# from vectorstore import load_vectorstore
+from .vectorstore import load_vectorstore
 from langchain_groq import ChatGroq
 from dotenv import load_dotenv
 load_dotenv()

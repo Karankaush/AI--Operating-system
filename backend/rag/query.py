@@ -1,4 +1,4 @@
-from vectorstore import load_vectorstore
+from .vectorstore import load_vectorstore
 vectorstore = load_vectorstore()
 
 retriever = vectorstore.as_retriever(

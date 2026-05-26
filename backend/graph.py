@@ -39,13 +39,10 @@ graph.add_conditional_edges(
         "chatbot": "chatbot"
     }
 )
-graph.add_edge(
-    "calculator_worker",
-    "chatbot"
-)
-
-
 graph.add_edge("research_worker", "chatbot")
+graph.add_edge("calculator_worker","chatbot")
+graph.add_edge("rag_worker","chatbot")
+# graph.add_edge("planner","chatbot")
 
 graph.add_edge("chatbot", END)
 
